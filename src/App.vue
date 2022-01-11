@@ -21,11 +21,11 @@
           </td>
         </tr>
         <tr>
-          <td> <input type="hidden" :v-model="painting.id"> </td>
-          <td> <input type="text" :v-model="painting.title"> </td>
-          <td> <input type="number" :v-model="painting.year"> </td>
-          <td> <input type="checkbox" :v-model="painting.on_display"> </td>
-          <td> <button @click="newPainting">Létrehoz</button> </td>
+          <td> <input type="hidden" v-model="painting.id"> </td>
+          <td> <input type="text" v-model="painting.title"> </td>
+          <td> <input type="number" v-model="painting.year"> </td>
+          <td> <input type="checkbox" v-model="painting.on_display"> </td>
+          <td> <button @click="newPainting" :disabled="saving">Létrehoz</button> </td>
         </tr>
       </tbody>
     </table>
@@ -41,6 +41,7 @@ export default {
   },
   data() {
     return {
+      saving: false,
       painting: {
         id: null,
         title: '',
@@ -65,10 +66,16 @@ export default {
       await this.loadData()
     },
     async newPainting() {
-      let Response = await fetch('http://127.0.0.1:8000/api/paintings', {
+      this.saving = 'disabled'
+      await fetch('http://127.0.0.1:8000/api/paintings', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', 'Accept': 'application/json'
+        },
         body: JSON.stringify(this.painting)
       })
+      await this.loadData()
+      this.saving=false
     }
   }
 }
