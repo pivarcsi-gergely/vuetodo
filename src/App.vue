@@ -81,6 +81,7 @@ export default {
       })
       await this.loadData()
       this.saving=false
+      this.resetForm()
     },
     
     async editPainting(id) {
@@ -91,7 +92,7 @@ export default {
     },
 
     cancelEdit() {
-      this.mod_new = true;
+      this.resetForm()
     },
 
     async savePainting() {
@@ -105,6 +106,17 @@ export default {
       })
       await this.loadData()
       this.saving=false
+      this.resetForm()
+    },
+
+    resetForm() {
+      this.painting = {
+        id: null,
+        title: '',
+        year: '',
+        on_display: false
+      }
+      this.mod_new = true
     }
 
   }
