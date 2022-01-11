@@ -18,6 +18,7 @@
           <td>{{ painting.on_display }}</td>
           <td>
             <button @click="deletePainting(painting.id)">Delete</button>
+            <button @click="editPainting(painting.id)">Edit</button>
           </td>
         </tr>
         <tr>
@@ -25,7 +26,9 @@
           <td> <input type="text" v-model="painting.title"> </td>
           <td> <input type="number" v-model="painting.year"> </td>
           <td> <input type="checkbox" v-model="painting.on_display"> </td>
-          <td> <button @click="newPainting" :disabled="saving">Létrehoz</button> </td>
+          <td> <button v-if="mod_new" @click="newPainting" :disabled="saving">Létrehoz</button> </td>
+          <td> <button v-if="!mod_new" @click="savePainting" :disabled="saving">Save</button> </td>
+          <td> <button v-if="!mod_new" @click="cancelEdit" :disabled="saving">Cancel</button> </td>
         </tr>
       </tbody>
     </table>
@@ -41,6 +44,7 @@ export default {
   },
   data() {
     return {
+      mod_new: true,
       saving: false,
       painting: {
         id: null,
@@ -65,6 +69,7 @@ export default {
       console.log(Response)
       await this.loadData()
     },
+
     async newPainting() {
       this.saving = 'disabled'
       await fetch('http://127.0.0.1:8000/api/paintings', {
@@ -76,7 +81,32 @@ export default {
       })
       await this.loadData()
       this.saving=false
+    },
+    
+    async editPainting(id) {
+      let Response = await fetch(`http://127.0.0.1:8000/api/paintings/${id}`)
+      let data = await Response.json()
+      this.painting = {...data}
+      this.mod_new = false;
+    },
+
+    cancelEdit() {
+      this.mod_new = true;
+    },
+
+    async savePainting() {
+      this.saving = 'disabled'
+      await fetch(`http://127.0.0.1:8000/api/paintings/${this.painting.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json', 'Accept': 'application/json'
+        },
+        body: JSON.stringify(this.painting)
+      })
+      await this.loadData()
+      this.saving=false
     }
+
   }
 }
 </script>
