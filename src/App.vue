@@ -1,42 +1,55 @@
 <template>
   <div id="app">
-    <Todo :todos="todos" @todo-item-changed="Changed"/>
+    <table>
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Title</th>
+          <th>Year</th>
+          <th>On Display</th>
+          <th>Operations</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="painting in paintings" v-bind:key="painting.id">
+          <td>{{ painting.id }}</td>
+          <td>{{ painting.title }}</td>
+          <td>{{ painting.year }}</td>
+          <td>{{ painting.on_display }}</td>
+          <td>
+            <button @click="deletePainting(painting.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button @click="loadData">Adatok betöltése</button>
   </div>
 </template>
 
 <script>
-import Todo from './components/Todo.vue'
 
 export default {
   name: 'App',
   components: {
-    Todo
   },
   data() {
     return {
-      todos: [
-        {
-          title: 'Első teendő',
-          valami: 'valami'
-        },
-        {
-          title: 'Második teendő'
-        },
-        {
-          title: 'Harmadik teendő'
-        },
-        ]
+      paintings: []
     }
   },
   methods: {
-    Changed(e) {
-      this.todos.map(function (todo) {
-        if (todo.title != e.original.title) {
-          return todo
-        }
-        todo.title = e.new.title
-        return todo
+    async loadData() {
+    let Response = await fetch('http://127.0.0.1:8000/api/paintings')
+    let data = await Response.json()
+    this.paintings = data;
+    },
+
+    async deletePainting(id) {
+      let Response = await fetch(`http://127.0.0.1:8000/api/paintings/${id}`, {
+        method: 'DELETE'
       })
+      console.log(Response)
+      await this.loadData()
     }
   }
 }
