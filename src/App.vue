@@ -21,7 +21,7 @@
             <button @click="editPainting(painting.id)">Edit</button>
           </td>
         </tr>
-        <tr>
+        <tr id="editor">
           <td> <input type="hidden" v-model="painting.id"> </td>
           <td> <input type="text" v-model="painting.title"> </td>
           <td> <input type="number" v-model="painting.year"> </td>
@@ -55,6 +55,7 @@ export default {
       paintings: []
     }
   },
+
   methods: {
     async loadData() {
     let Response = await fetch('http://127.0.0.1:8000/api/paintings')
@@ -85,6 +86,7 @@ export default {
     },
     
     async editPainting(id) {
+      location.hash = '#editor'
       let Response = await fetch(`http://127.0.0.1:8000/api/paintings/${id}`)
       let data = await Response.json()
       this.painting = {...data}
@@ -92,6 +94,7 @@ export default {
     },
 
     cancelEdit() {
+      location.hash = ''
       this.resetForm()
     },
 
@@ -119,6 +122,10 @@ export default {
       this.mod_new = true
     }
 
+  },
+  
+  mounted() {
+    this.loadData()
   }
 }
 </script>
